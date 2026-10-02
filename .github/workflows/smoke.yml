@@ -22,5 +22,6 @@ jobs:
       - name: Verify live backend, bundled UI and typed agent transport
         env:
           JOBHOUND_SMOKE_PUBLIC_BOARD: '1'
+          JOBHOUND_SMOKE_PRESET_SNAPSHOT: '1'
         run: python smoke.py
 

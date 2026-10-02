@@ -2,7 +2,7 @@
 
 Run the existing JobHound app inside Meta Muse or a similar agent workspace. The backend, bundled web UI and 106 typed MCP tools come from canonical JobHound. This experimental distribution keeps the full app while testing a board-first agent workflow; it does not add Muse as an outbound AI provider.
 
-Lou's first Muse test verified install, agent access, bundled UI serving and normal stop/start persistence. Global-board access failed through Muse's required proxy; scraper detection rejected synthetic DNS. Preview 2 adds opt-in environment transport and packages the public board's canonical Node query engine. Preview 3 additionally fixes the first feed fetch on a newly booted VM (the cache interval now applies only after a check). Muse retesting is required. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
+Lou's first Muse test verified install, agent access, bundled UI serving and normal stop/start persistence. Global-board access failed through Muse's required proxy; scraper detection rejected synthetic DNS. Preview 2 adds opt-in environment transport and packages the public board's canonical Node query engine. Preview 3 additionally fixes the first feed fetch on a newly booted VM (the cache interval now applies only after a check). Preview 4 adds the complete packaged public preset catalog for offline browsing and recipe resolution. Muse retesting is required. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
 
 ## Install and keep the same profile
 
@@ -50,3 +50,9 @@ Offer features and optional onboarding, use the global board first, and prefer e
 ## Ownership
 
 Repository files are generated from canonical integrations/agent-workspace. The release includes canonical runtime, built UI and the same public-board query engine, with per-file hashes. Personal data, databases, credentials and installed environments are excluded. Fix source in canonical JobHound, then export a new release; do not fork the generated runtime. Installation/searching never submits applications.
+
+## Packaged full preset catalog (preview 4)
+
+This release includes a verified snapshot of all public preset collections, company/member/search pages and recipe artifacts. When online catalog access fails and no downloaded catalog is available, JobHound uses this read-only release snapshot through the existing UI/API/MCP contracts. No profile data is copied or monitors installed by fallback. It reports community_status=offline, catalog_status=stale, catalog_source=release_snapshot, generation/capture dates and the underlying live error. Offline does not mean the preset list is empty.
+
+Use list_company_presets and get_company_preset normally, including marketing-agencies-canada. Forced refresh retries the live catalog and may still return the snapshot. The snapshot is fixed to this release, not a live update: install a newer workspace release to get a newer snapshot when online access is blocked. A downloaded catalog retains priority; mismatched artifact revisions never silently resolve to older recipes. Existing preview/revision checks and recipe validation remain required for explicit installs. Careers-page scraper networking is separate and may still fail on synthetic DNS.

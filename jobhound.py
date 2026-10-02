@@ -148,6 +148,7 @@ def main():
                       "external_network_mode": args.network_mode,
                       "node_available": shutil.which("node") is not None,
                       "public_board_query_engine_present": all((app / "web/src/shared/job-board-ui" / name).is_file() for name in ("query.mjs", "query-runner.mjs")),
+                      "preset_catalog_snapshot_present": (app / "server/preset_snapshot/snapshot.json").is_file(),
                       "native_audio_capture": sys.platform == "win32",
                       "proxy_environment_present": any(os.getenv(key) for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy")),
                       "private_artifact_mount": "unverified", "restart_durability": "unverified",

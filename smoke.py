@@ -18,6 +18,9 @@ def main():
     root, _, _, _ = layout(HERE / ".jobhound", value["release"])
     if (root / "data" / "jobhound.sqlite3").exists():
         raise RuntimeError("This smoke check requires a fresh test profile")
+    if os.getenv("JOBHOUND_SMOKE_PRESET_SNAPSHOT") == "1":
+        _, _, app, python = layout(HERE / ".jobhound", value["release"])
+        probe = subprocess.run([str(python), str(HERE / "preset_snapshot_probe.py")], cwd=app, check=True)
     service = subprocess.Popen([sys.executable, "jobhound.py", "serve"], cwd=HERE)
     try:
         for _ in range(60):
