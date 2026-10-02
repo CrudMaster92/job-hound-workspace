@@ -1,4 +1,4 @@
-# Muse preview 2 acceptance checks
+# Muse preview 3 acceptance checks
 
 Preserve the existing test profile and artifacts. The user authorized testing this preview and the existing Anthropic monitor. Do not create another monitor, transfer private documents, configure paid AI, weaken validation or expose the service publicly.
 

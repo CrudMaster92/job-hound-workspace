@@ -2,7 +2,7 @@
 
 Run the existing JobHound app inside Meta Muse or a similar agent workspace. The backend, bundled web UI and 106 typed MCP tools come from canonical JobHound. This experimental distribution keeps the full app while testing a board-first agent workflow; it does not add Muse as an outbound AI provider.
 
-Lou's first Muse test verified install, agent access, bundled UI serving and normal stop/start persistence. Global-board access failed through Muse's required proxy; scraper detection rejected synthetic DNS. Preview 2 adds opt-in environment transport and packages the public board's canonical Node query engine. Muse retesting is required. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
+Lou's first Muse test verified install, agent access, bundled UI serving and normal stop/start persistence. Global-board access failed through Muse's required proxy; scraper detection rejected synthetic DNS. Preview 2 adds opt-in environment transport and packages the public board's canonical Node query engine. Preview 3 additionally fixes the first feed fetch on a newly booted VM (the cache interval now applies only after a check). Muse retesting is required. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
 
 ## Install and keep the same profile
 
