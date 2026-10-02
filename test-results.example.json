@@ -1,0 +1,25 @@
+{
+  "format": "jobhound-workspace-test",
+  "version": 1,
+  "release": "replace-with-release-json-value",
+  "host": "Meta Muse",
+  "overall": "unverified",
+  "checks": {
+    "install": "unverified",
+    "private_human_ui": "unverified",
+    "structured_agent_calls": "unverified",
+    "create_retry_idempotency": "unsupported_use_read_before_create",
+    "deterministic_scrape": "unverified",
+    "human_agent_parity": "unverified",
+    "service_restart_persistence": "unverified",
+    "runtime_restart_persistence": "unverified",
+    "observed_scheduled_run": "unverified",
+    "native_audio_capture": "unsupported_on_linux",
+    "muse_outbound_provider": "not_implemented"
+  },
+  "monitor_id": null,
+  "run_ids": [],
+  "errors": [],
+  "notes": []
+}
+

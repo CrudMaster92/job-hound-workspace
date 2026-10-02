@@ -1,0 +1,5 @@
+.jobhound/
+__pycache__/
+*.pyc
+test-results.local.json
+

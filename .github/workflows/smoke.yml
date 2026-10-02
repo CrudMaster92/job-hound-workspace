@@ -1,0 +1,21 @@
+name: Linux workspace smoke
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspect fresh workspace
+        run: python jobhound.py doctor
+      - name: Install verified preview release
+        run: python jobhound.py install
+      - name: Verify live backend, bundled UI and typed agent transport
+        run: python smoke.py
+

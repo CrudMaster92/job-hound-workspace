@@ -1,0 +1,9 @@
+{
+  "format": "jobhound-agent-workspace",
+  "version": 1,
+  "release": "v0.1.0-workspace-preview.1",
+  "archive_url": "https://github.com/CrudMaster92/job-hound-workspace/releases/download/v0.1.0-workspace-preview.1/jobhound-v0.1.0-workspace-preview.1.tar.gz",
+  "sha256": "93a908c6e8a38785bdf1ea3a63e84376140ec5b840c3fc23129e1a9967b6b1e2",
+  "experimental": true,
+  "source_file_count": 141
+}
