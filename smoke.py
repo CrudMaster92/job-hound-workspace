@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -37,7 +38,23 @@ def main():
         assert discovered["ok"] and discovered["tool_count"] > 0
         status = subprocess.run([sys.executable, "jobhound.py", "status"], cwd=HERE, check=True, capture_output=True, text=True)
         assert json.loads(status.stdout)["ok"]
-        print(json.dumps({"ok": True, "checks": ["live_backend", "bundled_ui", "typed_tools", "live_status"],
+        checks = ["live_backend", "bundled_ui", "typed_tools", "live_status"]
+        if os.getenv("JOBHOUND_SMOKE_PUBLIC_BOARD") == "1":
+            with urllib.request.urlopen("http://127.0.0.1:4176/api/v1/public-board/status", timeout=300) as response:
+                board = json.load(response)
+            assert board["state"] in {"ready", "stale"}, board.get("error")
+            with urllib.request.urlopen("http://127.0.0.1:4176/api/v1/public-board/jobs?limit=3", timeout=120) as response:
+                page = json.load(response)
+            assert page["total"] > 0 and 0 < len(page["items"]) <= 3
+            assert all(item["id"] and item["source_url"] for item in page["items"])
+            called = subprocess.run([sys.executable, "jobhound.py", "call", "search_public_jobs", "--arguments", '{"query":{"limit":3}}'], cwd=HERE, check=True, capture_output=True, text=True)
+            envelope = json.loads(called.stdout)
+            assert envelope["ok"] and not envelope["result"]["isError"]
+            result = envelope["result"]
+            agent_page = result.get("structuredContent") or json.loads(result["content"][0]["text"])
+            assert [item["id"] for item in agent_page["items"]] == [item["id"] for item in page["items"]]
+            checks += ["live_public_feed", "packaged_shared_query_engine", "human_agent_public_job_ids"]
+        print(json.dumps({"ok": True, "checks": checks,
                           "tool_count": discovered["tool_count"], "release": value["release"]}))
     finally:
         # Stop the child backend as well as its launcher, on this disposable run.

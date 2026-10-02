@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -117,6 +118,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--home", default=str(HERE / ".jobhound"), help="Choose a durable third-party workspace location.")
     parser.add_argument("--port", type=int, default=4176, help="Loopback port; 4176 keeps the test instance separate.")
+    parser.add_argument("--network-mode", choices=("direct", "environment"),
+                        default=os.getenv("JOBHOUND_EXTERNAL_NETWORK_MODE", "direct"),
+                        help="Opt in to the workspace proxy/CA environment for external job/feed requests.")
     commands = parser.add_subparsers(dest="action", required=True)
     for name in ("install", "doctor", "serve", "status", "tools"):
         commands.add_parser(name)
@@ -129,6 +133,8 @@ def main():
             raise ValueError("Python 3.11 or later is required")
         if not 1024 <= args.port <= 65535:
             raise ValueError("port must be between 1024 and 65535")
+        if args.network_mode not in {"direct", "environment"}:
+            raise ValueError("network-mode must be direct or environment")
         value = manifest()
         root, runtime, app, python = layout(args.home, value["release"])
         ready = (runtime / "ready.json").exists() and python.exists()
@@ -139,6 +145,9 @@ def main():
             result = {"ok": True, "installed": ready, "release": value["release"], "home": str(root),
                       "data_path": str(root / "data"), "api_url": api_url,
                       "python": sys.version.split()[0], "platform": sys.platform,
+                      "external_network_mode": args.network_mode,
+                      "node_available": shutil.which("node") is not None,
+                      "public_board_query_engine_present": all((app / "web/src/shared/job-board-ui" / name).is_file() for name in ("query.mjs", "query-runner.mjs")),
                       "native_audio_capture": sys.platform == "win32",
                       "proxy_environment_present": any(os.getenv(key) for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy")),
                       "private_artifact_mount": "unverified", "restart_durability": "unverified",
@@ -148,7 +157,7 @@ def main():
         else:
             if not ready:
                 raise ValueError("Run install first; use the same --home for every command")
-            env = {**os.environ, "JOBHOUND_API_URL": api_url, "JOBHOUND_DB_PATH": str(root / "data" / "jobhound.sqlite3"), "JOBHOUND_LAN": "0"}
+            env = {**os.environ, "JOBHOUND_API_URL": api_url, "JOBHOUND_DB_PATH": str(root / "data" / "jobhound.sqlite3"), "JOBHOUND_LAN": "0", "JOBHOUND_EXTERNAL_NETWORK_MODE": args.network_mode}
             if args.action == "serve":
                 command = [str(python), "-m", "uvicorn", "server.app:app", "--host", "127.0.0.1", "--port", str(args.port)]
             else:

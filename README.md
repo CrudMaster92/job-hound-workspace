@@ -1,50 +1,52 @@
 # JobHound agent workspace preview
 
-This is an experimental installation channel for the existing JobHound app, starting with Meta Muse. It is not a separately authored app. The backend, web UI, matching rules and MCP tools are exported from the canonical JobHound source.
+Run the existing JobHound app inside Meta Muse or a similar agent workspace. The backend, bundled web UI and 106 typed MCP tools come from canonical JobHound. This experimental distribution keeps the full app while testing a board-first agent workflow; it does not add Muse as an outbound AI provider.
 
-**Status: prepared for testing; operation inside Muse is unverified.** This release does not add Muse as JobHound's outbound AI provider.
+Lou's first Muse test verified install, agent access, bundled UI serving and normal stop/start persistence. Global-board access failed through Muse's required proxy; scraper detection rejected synthetic DNS. Preview 2 adds opt-in environment transport and packages the public board's canonical Node query engine. Muse retesting is required. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
 
-## For Muse
+## Install and keep the same profile
 
-Read [TEST_INSTRUCTIONS.md](TEST_INSTRUCTIONS.md), then [SKILL.md](SKILL.md). Use a fresh profile and report observed results. Do not modify the generated runtime to make a test pass; report the compatibility issue so it can be fixed in the canonical app.
-
-Clone this repository using the normal GitHub URL. Python 3.11 or later is required.
-
-Choose a durable location for third-party app data. Commands default to .jobhound in this clone; supply the same --home location before every command if your platform offers a better persistent path.
+Python 3.11+ and Node.js 18+ are required (Node runs the shared public-board query engine). Clone this public repository. Read [SKILL.md](SKILL.md) and [WORKFLOW.md](WORKFLOW.md). Use [TEST_INSTRUCTIONS.md](TEST_INSTRUCTIONS.md) for validation.
 
     python3 jobhound.py doctor
     python3 jobhound.py install
     python3 jobhound.py serve
 
-Serve is a foreground process at http://127.0.0.1:4176. Keep it running using a supported workspace service facility; closing a terminal may stop it. Do not assume Muse's own background tasks guarantee third-party uptime. The installer verifies the release checksum, keeps test data separate from release code, and reuses a completed install on retry. It does not install browser binaries or transcription models automatically.
+Choose durable app storage: default home is .jobhound in this clone. Supply the same --home and --port before every command if you choose another location. Releases/venvs are separate from home/data; updating this clone and installing a new release preserves the profile. Stop the previous service before starting the new release on the same home/port. Never run two releases against one profile at once.
+
+Serve runs in the foreground on http://127.0.0.1:4176. Keep it running using supported host facilities; a closed terminal may stop it. The installer verifies the archive checksum and reuses completed installs. It does not install browser binaries or transcription models.
 
 In another terminal:
 
     python3 jobhound.py status
     python3 jobhound.py tools
-    python3 jobhound.py call list_monitors --arguments '{}'
-    python3 jobhound.py call search_jobs --arguments '{}'
+    python3 jobhound.py call get_public_board_status --arguments '{}'
+    python3 jobhound.py call search_public_jobs --arguments '{"query":{"limit":10}}'
 
-The tools command returns current input schemas and annotations. The call command uses the existing typed MCP contracts, not a generic HTTP or database interface. Human users use the same bundled web UI and backend. Call results use the canonical MCP envelope, including structuredContent and isError.
+Discover schemas before using tools. Commands call existing typed MCP contracts; inspect ok and result.isError. Doctor also returns optional stdio MCP registration details; use them only if the host supports registration.
 
-Doctor returns an optional stdio MCP registration specification. Use it only if the host has a supported registration mechanism. Otherwise use the focused JSON commands through a custom skill.
+## Workspaces that require a proxy
 
-## Known limits to test
+External board, preset HTTP and scraper HTTP clients default to direct transport. If the host requires its ambient proxy/CA setup, opt in when starting the service:
 
-- Monitor creation currently has no backend retry deduplication. List first and reuse a resolved ID; do not blindly repeat create after an uncertain response.
-- JobHound disables ambient proxies in its external clients. Muse's approved egress may require an explicit canonical transport adaptation; report blocked DNS, proxy or network calls instead of bypassing controls.
-- A human's browser cannot reach this workspace by fetching its own localhost. Opening the app inside Muse needs a supported private service/artifact route.
-- The app restricts iframe ancestors. Do not remove that protection or expose an unauthenticated tunnel to embed it.
-- Native interview recording currently requires Windows; it does not capture a user's laptop audio from a Linux cloud VM.
-- Credentials and local agent CLIs may be unavailable. Known ATS adapters and validated recipes can operate without an AI provider.
-- The profile lives inside the selected agent workspace. It does not synchronize with an existing Windows installation.
-- Schedules remain in JobHound; do not create an AI cron for each monitor.
+    python3 jobhound.py --network-mode environment serve
 
-## Ownership and updates
+Equivalently set JOBHOUND_EXTERNAL_NETWORK_MODE=environment in the service environment. HTTPX then honors HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/NO_PROXY (including lowercase variants), plus SSL_CERT_FILE/SSL_CERT_DIR. Use the host's existing approved configuration; do not print credentials, guess proxy URLs or disable certificate verification. Loopback agent-to-app HTTP remains direct regardless of these variables. Doctor reports selected mode and boolean presence only; it cannot inspect an already-running service's mode.
 
-This repository's files are generated from the canonical app's integrations/agent-workspace. The release archive contains canonical runtime source and its prebuilt web UI, with per-file hashes. Personal data, local databases, credentials, caches and installed environments are excluded by the export allowlist.
+This opt-in does not remove host, redirect, size, checksum, TLS or DNS/IP validation. Scrapers and remote presets may still reject Muse's synthetic/non-public DNS; report those failures. The board feed's fixed configured origin uses its existing validation. Browser automation and AI-provider networking are separate and are not changed by this mode. A proxy is an explicitly trusted egress dependency, not an unrestricted JobHound endpoint.
 
-Fixes belong in canonical JobHound and are exported as a new preview release. Existing profiles remain under the selected home/data directory. Neither installing nor starting this preview submits job applications.
+## Present results to the human
 
-See [TEST_INSTRUCTIONS.md](TEST_INSTRUCTIONS.md) for the acceptance gates and [test-results.example.json](test-results.example.json) for the report format.
+Offer features and optional onboarding, use the global board first, and prefer existing presets before building scrapers. Use [ARTIFACT_GUIDE.md](ARTIFACT_GUIDE.md) to author a dated read-only Muse job list from backend results. This gives the human a useful view while full bundled-UI hosting is unresolved. A snapshot does not provide automatic refresh or the entire app's interactive controls.
 
+## Other limits
+
+- Monitor creation lacks backend retry deduplication: list first and reuse its ID after uncertainty.
+- Native audio recording requires Windows; a cloud Linux VM cannot capture the human's laptop microphone through this app.
+- Private documents, paid AI and outbound agent-provider configuration are optional separate setup.
+- Profiles do not synchronize with a Windows installation. Schedules belong to JobHound; do not duplicate them with agent cron.
+- Do not expose public tunnels or weaken loopback/framing protection to host the app.
+
+## Ownership
+
+Repository files are generated from canonical integrations/agent-workspace. The release includes canonical runtime, built UI and the same public-board query engine, with per-file hashes. Personal data, databases, credentials and installed environments are excluded. Fix source in canonical JobHound, then export a new release; do not fork the generated runtime. Installation/searching never submits applications.

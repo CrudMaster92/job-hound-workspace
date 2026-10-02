@@ -12,10 +12,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Inspect fresh workspace
         run: python jobhound.py doctor
       - name: Install verified preview release
         run: python jobhound.py install
       - name: Verify live backend, bundled UI and typed agent transport
+        env:
+          JOBHOUND_SMOKE_PUBLIC_BOARD: '1'
         run: python smoke.py
 
