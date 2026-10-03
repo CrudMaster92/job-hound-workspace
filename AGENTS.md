@@ -38,6 +38,9 @@ schedules. Existing watches remain until their human chooses a verified replacem
 An empty `find_recruiters.candidates` array describes that backend invocation.
 It does **not** prove that the returned Boolean query or Google link returns no
 recruiters. Run/inspect the query with supported host tools when requested.
+Read the recruiter guide before making availability claims in a new chat.
+Older memory about a particular blocked search is dated evidence, not a rule
+about public profiles or an untested provider's capabilities.
 Public search titles/snippets can support a recruiter match even when opening
 the LinkedIn profile requires login. Do not announce that LinkedIn profiles are
 universally undiscoverable. Report what was actually observed, retain the useful
