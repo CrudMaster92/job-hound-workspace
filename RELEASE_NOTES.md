@@ -19,7 +19,7 @@ results. Tracking, profile shortcuts and complex dashboard editing remain option
 
 The full canonical runtime, bundled UI and 111 typed tools remain shared. New
 public-contribution tools prepare an inspectable public-only JSON package, track
-the exact PR and refresh validation/review/publication states. Trusted CI and Jo's
+the exact PR and refresh validation/review/publication states. Trusted CI and the maintainer's
 merge are required; no auto-merge, arbitrary plugins or private-profile exports.
 
 The portable launcher defaults to durable storage outside the clone, automatically

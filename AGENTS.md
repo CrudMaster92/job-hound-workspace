@@ -56,7 +56,7 @@ it does not apply to employers or send outreach.
 
 The agent profile disables local scraper execution by default. Preserve DNS/TLS
 guards, loopback security and private files. Use the shared feed and public-only
-contribution packages; Jo approves recipe merges. GitHub OAuth, repository access
+contribution packages; the maintainer approves recipe merges. GitHub OAuth, repository access
 and each host write approval remain explicit. No token handoffs or auto-merge.
 Queued work is not completed: inspect its run ID until terminal.
 

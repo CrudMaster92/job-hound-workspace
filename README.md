@@ -66,7 +66,7 @@ Use list_company_presets and get_company_preset normally, including marketing-ag
 
 ## Contribution profile (preview 6)
 
-Board roles and presets come first. The default agent profile retains the full app and 111 tools but disables local scraper execution; supported desktop hosts retain it. Read CONTRIBUTIONS.md for human-requested public-only packages, trusted runtime validation, Jo's merge and automatic collection. No auto-merge or arbitrary plugins. Native/uptime/UI limitations are explicit in status capabilities. Preview 5 fixes malformed IPv6 NO_PROXY patterns without weakening DNS/TLS. GitHub OAuth and per-write approval remain host responsibilities. Live Muse PR creation is unverified until its human connects GitHub and that gate is observed.
+Board roles and presets come first. The default agent profile retains the full app and 111 tools but disables local scraper execution; supported desktop hosts retain it. Read CONTRIBUTIONS.md for human-requested public-only packages, trusted runtime validation, the maintainer's merge and automatic collection. No auto-merge or arbitrary plugins. Native/uptime/UI limitations are explicit in status capabilities. Preview 5 fixes malformed IPv6 NO_PROXY patterns without weakening DNS/TLS. GitHub OAuth and per-write approval remain host responsibilities. Live Muse PR creation is unverified until its human connects GitHub and that gate is observed.
 
 Preview 6 fixes full-feed search above the old 64 MiB query input limit. The
 shared runner has a bounded 256 MiB byte budget for the supported 200 MB feed
