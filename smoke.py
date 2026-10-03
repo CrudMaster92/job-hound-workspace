@@ -2,15 +2,37 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 from pathlib import Path
 import subprocess
 import sys
 import time
 import urllib.request
-from jobhound import layout, manifest
+from jobhound import layout, manifest, extract_checked, MAX_ARCHIVE_BYTES
 
 HERE = Path(__file__).resolve().parent
+
+
+def stage_preview_archive(test_home, value, archive):
+    """CI stages the exact checked-in asset; installation still uses the launcher."""
+    archive = Path(archive)
+    if archive.is_dir():
+        archive = archive / f"jobhound-{value['release']}.tar.gz"
+    if archive.stat().st_size > MAX_ARCHIVE_BYTES:
+        raise ValueError("Preview archive exceeds installation limit")
+    digest = hashlib.sha256()
+    with archive.open("rb") as source:
+        for chunk in iter(lambda: source.read(65536), b""):
+            digest.update(chunk)
+    if digest.hexdigest() != value["sha256"]:
+        raise ValueError("Preview archive checksum differs from release manifest")
+    _, runtime, _, _ = layout(test_home, value["release"])
+    if runtime.exists():
+        raise ValueError("Preview staging requires a fresh runtime directory")
+    runtime.mkdir(parents=True)
+    extract_checked(archive, runtime)
+    (runtime / "verified.json").write_text(json.dumps({"sha256": value["sha256"]}))
 
 
 def main():
@@ -20,6 +42,9 @@ def main():
     common = [sys.executable, str(HERE / "jobhound.py"), "--home", str(test_home)]
     if (root / "data" / "jobhound.sqlite3").exists():
         raise RuntimeError("This smoke check requires a fresh test profile")
+    if os.getenv("JOBHOUND_SMOKE_ARCHIVE"):
+        stage_preview_archive(test_home, value, os.environ["JOBHOUND_SMOKE_ARCHIVE"])
+        subprocess.run(common + ["install"], cwd=HERE, check=True)
     if os.getenv("JOBHOUND_SMOKE_PRESET_SNAPSHOT") == "1":
         _, _, app, python = layout(test_home, value["release"])
         probe = subprocess.run([str(python), str(HERE / "preset_snapshot_probe.py")], cwd=app, check=True)
