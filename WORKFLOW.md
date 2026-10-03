@@ -50,6 +50,13 @@ Use the host's supported scheduling and notification facilities. No particular M
 
 ## Other portable capabilities
 
+For recruiter contacts or `/find_recruiters`, read
+[skills/find-recruiters/SKILL.md](skills/find-recruiters/SKILL.md). For interview
+practice or `/interview_prep`, read
+[skills/interview-prep/SKILL.md](skills/interview-prep/SKILL.md). These guides
+explain native Muse research/coaching alongside the typed backend contracts;
+they work without a native slash menu or a separately configured AI provider.
+
 All 111 tools and the bundled UI remain available through the same backend. Saves, application tracking, resumes/letters, interview preparation and dashboard cards can be used or suggested when relevant. Discover schemas, inspect before writes and respect document/provider consent. JobHound tracks applications; it does not submit them to employers. Private files and paid AI are optional.
 
 Read get_jobhound_status capabilities before scraping or recording. The agent profile disables local scraper creation/execution by default. Explain a supported desktop handoff instead of retrying blocked operations or weakening DNS/TLS. Sustained uptime and private Muse UI mounting require actual host tests. A dated read-only artifact gives a useful human view while those remain unverified.

@@ -5,7 +5,7 @@ description: Help a user find jobs with JobHound in an agent workspace, introduc
 
 # JobHound in an agent workspace
 
-Read README.md for installation and transport. Use WORKFLOW.md for onboarding and job search; use ARTIFACT_GUIDE.md when the human needs a visible board. TEST_INSTRUCTIONS.md describes preview acceptance checks, not a requirement to create a monitor for every user.
+Read [AGENTS.md](AGENTS.md) first, including in a new conversation. It explains what this distribution is and routes natural-language requests to the two lightweight guides: [find recruiters](skills/find-recruiters/SKILL.md) and [interview prep](skills/interview-prep/SKILL.md). These are usable instructions even without native skill registration; JobHound slash names do not promise a Muse slash menu. Read README.md for installation and transport. Use WORKFLOW.md for onboarding and job search; use ARTIFACT_GUIDE.md when the human needs a visible board. TEST_INSTRUCTIONS.md describes preview acceptance checks, not a requirement to create a monitor for every user.
 
 Introduce JobHound as a personal job-search assistant with a shared global job board, company presets and monitors, saved roles and application tracking, resume/letter support, interview preparation and dashboard summaries. Explain which features are available in this host. Offer a short onboarding, allow skipping it, and provide useful results promptly.
 

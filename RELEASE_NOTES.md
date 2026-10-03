@@ -5,6 +5,12 @@ a 256 MiB byte budget covering the 200 MB feed and bounded local overlays.
 HTTP and MCP use the same query engine. Timeouts describe pending work and
 retry/status guidance instead of claiming a healthy Linux service is offline.
 
+The distribution now has a root AGENTS.md for fresh conversations and two
+lightweight recruiter/interview guides. Slash names are conversational aliases,
+not assumed native Muse registration. Recruiter query results and backend
+candidates are distinct; public snippets can support contacts. Muse research
+and coaching remain useful without an outbound JobHound AI provider.
+
 ## Shared app, simpler agent workflow
 
 Board roles and preset browsing lead the workflow. Onboarding asks titles,

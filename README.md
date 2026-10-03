@@ -2,11 +2,17 @@
 
 Run the existing JobHound app inside Meta Muse or a similar agent workspace. The backend, bundled web UI and 111 typed MCP tools come from canonical JobHound. This experimental distribution keeps the full app while testing a board-first agent workflow; it does not add Muse as an outbound AI provider.
 
-Lou's first Muse test verified install, agent access, bundled UI serving and normal stop/start persistence. Global-board access failed through Muse's required proxy; scraper detection rejected synthetic DNS. Preview 2 adds opt-in environment transport and packages the public board's canonical Node query engine. Preview 3 additionally fixes the first feed fetch on a newly booted VM (the cache interval now applies only after a check). Preview 4 adds the complete packaged public preset catalog for offline browsing and recipe resolution. Muse retesting is required. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
+Preview 6 has passed real Muse and GitHub Linux tests: full-feed search, identical HTTP/MCP role IDs, 111 tools, automatic startup/reuse and stop/restart with retained notes. Proxy-aware board access and the dated preset snapshot work. Local scraper execution is disabled in the agent profile; blocked live preset refresh retains its original error and offline snapshot. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
+
+## Fresh conversations and lightweight skills
+
+Read [AGENTS.md](AGENTS.md) as the entry point. A fresh Muse conversation may not automatically load this repository or register its files in a native skill catalog. You can introduce it with: "Use JobHound from CrudMaster92/job-hound-workspace; read AGENTS.md and use its workflows when I ask for job-search help."
+
+Ask naturally for roles, recruiter contacts or interview practice. `/find_recruiters` and `/interview_prep` are conversational aliases for the [recruiter guide](skills/find-recruiters/SKILL.md) and [interview guide](skills/interview-prep/SKILL.md); `/skills` is the embedded app's menu, not a required Muse command. Muse can run public recruiter research using the backend's query and do sourced interview coaching without a separate outbound AI provider. Empty backend recruiter candidates do not prove the Google query has no matches.
 
 ## Install and keep the same profile
 
-Python 3.11+ and Node.js 18+ are required (Node runs the shared public-board query engine). Clone this public repository. Read [SKILL.md](SKILL.md) and [WORKFLOW.md](WORKFLOW.md). Use [TEST_INSTRUCTIONS.md](TEST_INSTRUCTIONS.md) for validation.
+Python 3.11+ and Node.js 18+ are required (Node runs the shared public-board query engine). Clone this public repository. Read [AGENTS.md](AGENTS.md), [SKILL.md](SKILL.md) and [WORKFLOW.md](WORKFLOW.md). Use [TEST_INSTRUCTIONS.md](TEST_INSTRUCTIONS.md) for validation.
 
     python3 jobhound.py doctor
     python3 jobhound.py install

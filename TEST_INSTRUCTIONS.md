@@ -13,4 +13,13 @@ No prior conversation, named Muse agent, personal monitor, private files, paid A
 9. Separate optional live gate: only when the human requests actual contribution, complete supported GitHub OAuth and per-write approvals; discover fork/branch/file/PR tools; submit one draft; record exact head; observe trusted validation and Jo's later merge; verify matching source admission in a new public generation. Missing auth/tool/approval is a concrete blocker.
 10. If the human wants daily summaries, inspect reminders and create/update one supported host notification following WORKFLOW.md. Observe actual delivery/artifact update. Do not scrape, replace an existing watch, or claim completion from queued work.
 
+For a fresh-chat instruction check, start a separate sidechat with only the
+repository URL and read AGENTS.md. Ask for recruiter help with a returned query
+whose backend candidates are empty, and for interview coaching without an
+outbound provider. Require the right guide, actual host inspection or an honest
+access limit, retained search links, no blanket LinkedIn impossibility claim,
+and a useful coaching path that does not demand provider setup. Never present
+invented profiles or a host-written answer as a stored backend pack. This check
+does not authorize private imports, saving roles, provider changes or outreach.
+
 Report board, presets, presentation, tools, storage, lifecycle, private UI mounting, audio, preparation, trusted validation and live publication separately. Keep untested/blocked gates explicit. Stop the test service normally and retain the isolated profile for inspection.
