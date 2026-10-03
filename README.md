@@ -58,9 +58,16 @@ This release includes a verified snapshot of all public preset collections, comp
 
 Use list_company_presets and get_company_preset normally, including marketing-agencies-canada. Forced refresh retries the live catalog and may still return the snapshot. The snapshot is fixed to this release, not a live update: install a newer workspace release to get a newer snapshot when online access is blocked. A downloaded catalog retains priority; mismatched artifact revisions never silently resolve to older recipes. Existing preview/revision checks and recipe validation remain required for explicit installs. Careers-page scraper networking is separate and may still fail on synthetic DNS.
 
-## Contribution profile (preview 5)
+## Contribution profile (preview 6)
 
 Board roles and presets come first. The default agent profile retains the full app and 111 tools but disables local scraper execution; supported desktop hosts retain it. Read CONTRIBUTIONS.md for human-requested public-only packages, trusted runtime validation, Jo's merge and automatic collection. No auto-merge or arbitrary plugins. Native/uptime/UI limitations are explicit in status capabilities. Preview 5 fixes malformed IPv6 NO_PROXY patterns without weakening DNS/TLS. GitHub OAuth and per-write approval remain host responsibilities. Live Muse PR creation is unverified until its human connects GitHub and that gate is observed.
+
+Preview 6 fixes full-feed search above the old 64 MiB query input limit. The
+shared runner has a bounded 256 MiB byte budget for the supported 200 MB feed
+plus saved/local overlays. Slow requests return deadline/status guidance;
+they do not imply the service is offline or direct Linux users to a Windows
+launcher. PR checks install the exact checked-in archive on Linux and compare
+live public role IDs through HTTP and MCP.
 
 ## Baseline host requirements and storage
 

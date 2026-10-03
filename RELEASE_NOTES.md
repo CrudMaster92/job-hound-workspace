@@ -1,4 +1,11 @@
-# Preview 5: shared app, simpler agent workflow
+# Preview 6: full-feed search verified on agent hosts
+
+The shared query bridge now accepts supported public feeds above 64 MiB, with
+a 256 MiB byte budget covering the 200 MB feed and bounded local overlays.
+HTTP and MCP use the same query engine. Timeouts describe pending work and
+retry/status guidance instead of claiming a healthy Linux service is offline.
+
+## Shared app, simpler agent workflow
 
 Board roles and preset browsing lead the workflow. Onboarding asks titles,
 locations and work mode; human-requested daily host notifications read shared
