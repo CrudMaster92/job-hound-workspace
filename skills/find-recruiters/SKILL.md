@@ -8,6 +8,11 @@ description: Find potential recruiters for a selected JobHound role, inspect Boo
 Read the workspace [AGENTS.md](../../AGENTS.md) for transport and ID rules.
 This is a lightweight workflow, not a requirement for a native Muse slash menu.
 
+If the human already has a returned Boolean query/search URL, go directly to
+step 3. Do not require a stored job, another save or another backend invocation
+just to inspect existing results. Their request to find or review recruiters
+authorizes read-only public research; do not add a permission menu for that.
+
 1. Resolve the role with `search_jobs`/`get_job`, or `get_public_job` for a public
    board role. Use its actual employer, title, location and source URL. The
    `find_recruiters` tool currently needs a stored integer `job_id`; use a

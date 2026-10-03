@@ -14,6 +14,9 @@ retrieve its canonical choices. Present them without preselection, unless the
 human has already explicitly chosen the areas. Keep questions at three unless
 they ask for another number. Follow-ups use the existing context/pack; a fresh
 backend generation is needed only when requested.
+The no-section menu is a read operation and needs no outbound AI provider.
+Ask only for a missing posting or preparation choices; extra language/format
+intake should not delay useful help. Use stated preferences when available.
 
 Choose the available path honestly:
 
