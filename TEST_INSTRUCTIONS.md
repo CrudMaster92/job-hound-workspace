@@ -1,16 +1,25 @@
-# Muse preview 4 acceptance checks
+# Fresh-agent acceptance checks
 
-Preserve the existing test profile and artifacts. The user authorized testing this preview and the existing Anthropic monitor. Do not create another monitor, transfer private documents, configure paid AI, weaken validation or expose the service publicly.
+No prior conversation, named Muse agent, personal monitor, private files, paid AI, watch or cron is required. Use an isolated durable test home and free loopback port. This checklist does not authorize public writes.
 
-1. Stop the previous JobHound service normally. Update this repository, install the pinned release, and retain the same --home. Run doctor; record release, Python/Node availability, query-engine presence, selected network mode and boolean proxy presence. Never record environment values or credentials.
-2. In Muse's proxied workspace start `python3 jobhound.py --network-mode environment serve` on the same loopback port. Verify status and tools (106). Keep supported process lifecycle separate from monitor schedules.
-3. Run get_public_board_status, then search_public_jobs with a small limit. Require actual structured jobs and source links; record generation/date, total matches and displayed count. An unavailable feed is not an empty search. Inspect a returned collection ID and perform one filtered search. First download may take longer than a warm-cache search.
-4. Use optional onboarding preferences for one real search, without inventing schema fields or importing private data. Produce/update a simple Muse artifact from these results using ARTIFACT_GUIDE.md. Verify the human can open it and links work. Label it a dated snapshot unless supported live callbacks actually work. Full bundled-UI mounting remains a separate, unverified gate.
-5. Read list_monitors and reuse the existing Muse feasibility - Anthropic monitor. Inspect preset/catalog tools before considering a build. Record live vs packaged availability separately. Live catalog requests may remain blocked by synthetic DNS; the full release snapshot should keep browsing and recipe inspection usable. Do not repeat create_monitor after uncertain responses.
-6. If retesting the existing build, queue once and poll its run ID until terminal. Record the synthetic/non-public DNS failure as blocked if it persists. Do not invoke run_scraper until a validated recipe is active. Report queued, partial and failed states honestly.
-7. Stop/start against the same home and confirm the existing monitor, criteria, histories and saved state persist. Full VM restart durability remains unverified unless observed. Test a JobHound schedule only after the manual scraper path passes, observe an actual scheduled run, and return the test monitor to manual.
-8. Report global-board access, Node engine search, visible artifact, private UI mount, approved networking, structured tools, storage and lifecycle separately. Leave native Linux audio unsupported and Muse-as-outbound-AI unimplemented.
+1. Read README.md, SKILL.md and WORKFLOW.md. Doctor/install the pinned release. Record version, Python/Node availability, network mode and boolean proxy presence; never record environment values or credentials.
+2. Discover exactly 111 typed tools. Call status without manually starting a daemon: require automatic healthy startup, profile=agent and honest capabilities. A second client must reuse the same service. Doctor's stdio registration must use the launcher. Foreign listeners must not be killed.
+3. Read board status and search with a small limit. Require actual structured role IDs/source links, feed generation/date, total and displayed count. Unavailable is blocked, not empty success. Filter once by a returned collection ID and inspect a job. Offer the optional three-question onboarding.
+4. Browse preset collections, inspect one returned collection and search its companies. Force refresh once; blocked networking must retain the packaged snapshot, its date and original error. No monitor installation is needed.
+5. Present a readable dated job snapshot through supported host artifacts, or direct links in chat if artifacts are unavailable. Verify the actual human view. Do not require a private app mount or invent live controls.
+6. Optionally save a public role after explicit human consent. Stop/start the same home and verify saved state. Keep notes under <home>/notes/, outside the clone/release. Test that a clone/release update retains state. Full VM restart durability requires an observed restart.
+7. Inspect the disabled local-scraper capability. A disposable creation attempt in this isolated profile must return an actionable unsupported result without adding a monitor or run. Never bypass DNS/TLS protections to pass.
+8. Read CONTRIBUTIONS.md and contribution schemas. With an explicit human request for local preparation, preview bounded public JSON, prepare once, poll to terminal and inspect/download the package. Repeating the request ID must return the same contribution. Preparation creates no monitor and is not submission, verification or publication.
+9. Separate optional live gate: only when the human requests actual contribution, complete supported GitHub OAuth and per-write approvals; discover fork/branch/file/PR tools; submit one draft; record exact head; observe trusted validation and Jo's later merge; verify matching source admission in a new public generation. Missing auth/tool/approval is a concrete blocker.
+10. If the human wants daily summaries, inspect reminders and create/update one supported host notification following WORKFLOW.md. Observe actual delivery/artifact update. Do not scrape, replace an existing watch, or claim completion from queued work.
 
-Keep the profile for follow-up inspection. Stop the service unless the user wants it kept running; report remaining processes/schedules. Use test-results.example.json as a starting point and include redacted errors and IDs. Do not claim complete app UI parity from a read-only artifact or schedule execution from configuration alone.
+For a fresh-chat instruction check, start a separate sidechat with only the
+repository URL and read AGENTS.md. Ask for recruiter help with a returned query
+whose backend candidates are empty, and for interview coaching without an
+outbound provider. Require the right guide, actual host inspection or an honest
+access limit, retained search links, no blanket LinkedIn impossibility claim,
+and a useful coaching path that does not demand provider setup. Never present
+invented profiles or a host-written answer as a stored backend pack. This check
+does not authorize private imports, saving roles, provider changes or outreach.
 
-9. Run list_company_presets with refresh_catalog=true. With blocked catalog DNS, require all five packaged collections and catalog_source=release_snapshot, catalog_status=stale, community_status=offline. Read get_company_preset for marketing-agencies-canada and search_preset_companies with that collection_id. Verify real company/monitor IDs and recipes are resolvable for preview without creating monitors. Refresh failure should retain these results and the original network diagnostic. Installing or running scrapers is a separate explicit step.
+Report board, presets, presentation, tools, storage, lifecycle, private UI mounting, audio, preparation, trusted validation and live publication separately. Keep untested/blocked gates explicit. Stop the test service normally and retain the isolated profile for inspection.

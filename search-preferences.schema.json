@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "BoardQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Query",
+          "type": "string"
+        },
+        "location": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Location",
+          "type": "string"
+        },
+        "company_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Company Ids",
+          "type": "array"
+        },
+        "collection_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Collection Ids",
+          "type": "array"
+        },
+        "work_modes": {
+          "items": {
+            "enum": [
+              "remote",
+              "hybrid",
+              "onsite",
+              "unknown"
+            ],
+            "type": "string"
+          },
+          "maxItems": 4,
+          "title": "Work Modes",
+          "type": "array"
+        },
+        "employment_types": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Employment Types",
+          "type": "array"
+        },
+        "salary_listed": {
+          "default": false,
+          "title": "Salary Listed",
+          "type": "boolean"
+        },
+        "posted_within_days": {
+          "anyOf": [
+            {
+              "enum": [
+                1,
+                7,
+                30
+              ],
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Posted Within Days"
+        },
+        "sort": {
+          "default": "newest",
+          "enum": [
+            "newest",
+            "oldest",
+            "title",
+            "company"
+          ],
+          "title": "Sort",
+          "type": "string"
+        },
+        "view": {
+          "default": "all",
+          "enum": [
+            "all",
+            "saved",
+            "favourite_companies"
+          ],
+          "title": "View",
+          "type": "string"
+        },
+        "limit": {
+          "default": 25,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      },
+      "title": "BoardQuery",
+      "type": "object"
+    },
+    "DailyNotification": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "human_requested": {
+          "default": false,
+          "title": "Human Requested",
+          "type": "boolean"
+        },
+        "local_time": {
+          "default": "09:00",
+          "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$",
+          "title": "Local Time",
+          "type": "string"
+        },
+        "delivery": {
+          "default": "message",
+          "enum": [
+            "message",
+            "artifact"
+          ],
+          "title": "Delivery",
+          "type": "string"
+        },
+        "host_schedule_id": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Host Schedule Id"
+        }
+      },
+      "title": "DailyNotification",
+      "type": "object"
+    },
+    "DeliveryCheckpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "feed_generation": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Feed Generation"
+        },
+        "last_delivery_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Delivery At"
+        },
+        "sent_job_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10000,
+          "title": "Sent Job Ids",
+          "type": "array"
+        }
+      },
+      "title": "DeliveryCheckpoint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "jobhound-agent-search",
+      "default": "jobhound-agent-search",
+      "title": "Format",
+      "type": "string"
+    },
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "query": {
+      "$ref": "#/$defs/BoardQuery"
+    },
+    "timezone": {
+      "default": "UTC",
+      "maxLength": 100,
+      "title": "Timezone",
+      "type": "string"
+    },
+    "daily_notification": {
+      "$ref": "#/$defs/DailyNotification"
+    },
+    "checkpoint": {
+      "$ref": "#/$defs/DeliveryCheckpoint"
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "title": "AgentSearchPreferences",
+  "type": "object"
+}
