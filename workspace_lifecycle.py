@@ -49,8 +49,12 @@ class ProfileLock:
             self.file.close()
 
     def record(self, value):
-        self.file.seek(0); self.file.truncate()
-        self.file.write(json.dumps(value).encode()); self.file.flush()
+        # Windows byte locks deny reads by another process. Keep inspectable
+        # ownership metadata outside the locked file and replace it atomically.
+        owner = self.path.with_suffix(".owner.json")
+        pending = owner.with_suffix(".pending.json")
+        pending.write_text(json.dumps(value))
+        os.replace(pending, owner)
 
 
 def instance_id(root: Path, release: str) -> str:
@@ -147,12 +151,12 @@ def stop_service(root, release, port):
     if current.get("busy"):
         raise ValueError("JobHound has active work; wait for its terminal receipt before stopping the service")
     expected = instance_id(root, release)
-    record = json.loads((root / "service.lock").read_text())
+    record = json.loads((root / "service.owner.json").read_text())
     if current.get("instance_id") != expected or record.get("instance_id") != expected or record.get("pid") != current.get("owner_pid"):
         raise ValueError("Service identity/PID does not match this profile; no process was signalled")
     # Windows SIGTERM can terminate a supervisor before its finally block.
     # An identity-bound file request lets the owning supervisor stop its child
-    # gracefully on both platforms without signalling a reused PID.
+    # through its owning supervisor without signalling a reused PID.
     pending = root / "stop-request.pending.json"
     pending.write_text(json.dumps({"pid": record["pid"], "instance_id": expected}))
     os.replace(pending, root / "stop-request.json")
