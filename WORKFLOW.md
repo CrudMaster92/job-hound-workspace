@@ -1,31 +1,44 @@
-# Help the human get value first
+# Find useful roles first
 
-## Introduce and onboard
+Offer these behaviors when a human asks for job-search help: find roles, browse employers, refine searches, help with resumes/letters or interviews, and provide daily updates. Keep application tracking, platform shortcuts and dashboard editing optional. This workflow should be usable by any Muse agent without prior context.
 
-Offer a brief feature menu: search the shared global board; browse company presets; follow employers with deterministic monitors; save roles and track applications; work with resumes and letters; prepare for interviews; review dashboard summaries. Some capabilities need additional setup, documents or a supported human interface. Do not claim every feature was tested in Muse.
+## Small onboarding
 
-Offer a quick onboarding: desired titles/keywords, location(s), remote/hybrid/onsite preference, preferred companies or sectors, and any employment/salary preferences supported by the discovered schema. Let the user skip, give partial answers or refine after seeing results. A resume is optional; ask before importing private files. Keep preferences in the conversation or supported host memory. There is no invented global-profile write tool; inspect JobHound tools before persisting anything.
+Ask only titles/keywords, locations and remote/hybrid/onsite preference. Allow skipping and partial answers, then show useful results promptly. A resume is optional and requires the human's choice before importing private files. Keep preferences in supported host memory or an explicitly chosen private durable file; never commit them to a public repo. Discover schemas before offering extra refinements; do not invent fields or a global-profile tool.
 
-## Global board before local scraping
+Write the chosen search to <home>/agent-search.json after onboarding, using search-preferences.schema.json (generated from the canonical AgentSearchPreferences and BoardQuery contracts). Start from search-preferences.example.json, replace its example query with this human's choices, and keep daily_notification disabled unless a supported host reminder was actually created after their request. Read this private file for later checks and reminders; never copy it into a public proposal. Humans can inspect/edit it, and every query is still executed by the same search_public_jobs contract used by the app UI. Only update checkpoint after a successful visible delivery.
 
-1. Read get_public_board_status. Inspect freshness, error, collections and source coverage. An unavailable feed is a failure, not zero matching jobs. Stale cached results can be useful if clearly labeled.
-2. Call search_public_jobs with a query object supported by its schema. Supported fields include query, location, company_ids, collection_ids, work_modes, employment_types, salary_listed, posted_within_days, sort, view, limit and offset. Use returned IDs; do not guess collection IDs. A collection filter browses shared results without installing monitors.
-3. Present a short first page with title, employer, location, work mode and direct source link. Show retrieval/feed dates, total matches and how many are displayed. Be clear about pagination and missing salary data. Use get_public_job for details when needed.
-4. Offer to refine the search, save a selected role, or create a visible host artifact. For saving, inspect the role and the set_public_job_saved schema first. Neither saving nor installing a monitor submits an application.
+Tracking and other optional features are mentioned once, skipped by default, and available on request.
 
-Example (shell quoting may differ by host):
+## Board, then presets, then optional contributions
 
-    python3 jobhound.py call get_public_board_status --arguments '{}'
-    python3 jobhound.py call search_public_jobs --arguments '{"query":{"query":"marketing","work_modes":["remote"],"limit":20}}'
+1. Read get_public_board_status: inspect feed freshness, errors and actual collection IDs. Unavailable is a failure, not zero matches; label useful stale cached results.
+2. Call search_public_jobs with a query from its discovered schema. Present a short page of titles, employers, locations, work mode and direct source links, plus total matches, displayed count and feed/retrieval dates. Use get_public_job for details. Refine instead of dumping hundreds of roles.
+3. Browse list_company_presets, then get_company_preset or search_preset_companies. Reuse returned IDs to filter the shared board. Browsing never requires installing a scraper. If community_status=offline and catalog_source=release_snapshot, browsing still works; label catalog_generated_at and preserve the live error.
+4. Optionally save a role with set_public_job_saved or show a dated snapshot using ARTIFACT_GUIDE.md. A job-list snapshot and an optional dashboard-card image are sufficient presentation patterns; complex widgets stay optional.
+5. For a missing employer, explain the coverage gap and offer a public contribution. Only that human's explicit request starts this workflow. Read CONTRIBUTIONS.md. Direct public findings may help the requesting human immediately, labelled with source, probe date and 'unvalidated; absent from curated feed'. Never mix them into shared results.
 
-Calls return an MCP envelope. Check both ok and result.isError, then read result.structuredContent or the documented content. Do not scrape presentation text when structured results exist.
+Example (shell quoting differs by host):
 
-## Presets before scraper creation
+    python3 jobhound.py --home "$HOME/.local/share/jobhound" call get_public_board_status --arguments '{}'
+    python3 jobhound.py --home "$HOME/.local/share/jobhound" call search_public_jobs --arguments '{"query":{"query":"marketing","work_modes":["remote"],"limit":10}}'
 
-If the human wants ongoing monitoring or a missing employer, inspect existing monitors and catalog/preset tools. Prefer a matching existing monitor, then a validated preset recipe. Read the install schema and resulting run status; installing a preset is a write and can queue work. An existing global-board role does not require a local monitor merely to view or save it.
+Check ok and result.isError, then use result.structuredContent or its documented JSON content. Never parse the rendered app UI as the integration. Private monitor criteria use OR within categories and AND between populated categories; the board uses BoardQuery.
 
-Only build a new scraper when the requested source is absent or no suitable recipe exists. Inspect the public careers URL, reuse a matching monitor, start manual, queue the build and poll to terminal. Normal checks remain deterministic. Add a supported JobHound schedule only when the manual path works and the user wants ongoing checks. A blocked synthetic-DNS build remains blocked; a proxy setting does not authorize weakening address validation.
+## Human-requested daily summaries
 
-## Host portability
+After a useful search, offer a short daily update. Only create a supported host reminder/cron when that human opts in. Confirm preferred time/timezone and short message versus quiet artifact refresh. Inspect existing reminders and update one rather than duplicate.
 
-Keep these instructions independent of Muse-specific process, artifact and memory tools. A host adapter should provide installation, lifecycle and presentation capabilities; JobHound owns searches, criteria, saves, recipes and schedules. Hermes/OpenClaw can use the same workflow and MCP contracts, with their own supported UI/installation paths. A small presentation adapter can consume results without duplicating business rules.
+The reminder prompt should say: use the same durable JobHound home and network mode; inspect board freshness; search the human's saved criteria; report relevant matches not seen in the previous successful update using stable IDs; include direct links and feed date; keep the summary short. Persist the checkpoint in a private durable location and update it only after actual delivery or a verified visible artifact. An unseen cached job is not necessarily newly posted. If the feed fails, report that once, retain the checkpoint and avoid retry floods.
+
+If the host has no scheduling or notifications, retain the private search and offer conversational checks when the human asks "check my roles". Do not invent a cron capability.
+
+Use the host's supported scheduling and notification facilities. No particular Muse agent's inbox, memory layout or artifact system is assumed. Await actual typed calls and delivery inside each reminder run; no fire-and-forget. This is a notification consumer of shared results, not a scraper schedule. JobHound owns deterministic collection; do not create per-agent scraper cron jobs. Keep an existing interim watch until replacement coverage is observed and its human explicitly chooses the transition.
+
+## Other portable capabilities
+
+All 111 tools and the bundled UI remain available through the same backend. Saves, application tracking, resumes/letters, interview preparation and dashboard cards can be used or suggested when relevant. Discover schemas, inspect before writes and respect document/provider consent. JobHound tracks applications; it does not submit them to employers. Private files and paid AI are optional.
+
+Read get_jobhound_status capabilities before scraping or recording. The agent profile disables local scraper creation/execution by default. Explain a supported desktop handoff instead of retrying blocked operations or weakening DNS/TLS. Sustained uptime and private Muse UI mounting require actual host tests. A dated read-only artifact gives a useful human view while those remain unverified.
+
+When a contribution is requested, its default shape is the public declarative package. Board/preset browsing remains the everyday entry point. A fully autonomous agent without its human present prepares a reviewable package, reports ready for review, and stops before OAuth, public writes or merge.

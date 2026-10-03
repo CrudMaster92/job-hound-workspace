@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import threading
 import shutil
 import subprocess
 import sys
@@ -19,6 +20,8 @@ import urllib.request
 import venv
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from workspace_lifecycle import ensure_service, run_service, stop_service, instance_id, touch, health
 MAX_ARCHIVE_BYTES = 100 * 1024 * 1024
 MAX_EXPANDED_BYTES = 250 * 1024 * 1024
 
@@ -116,17 +119,19 @@ def install(value, root, runtime, app, python):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--home", default=str(HERE / ".jobhound"), help="Choose a durable third-party workspace location.")
+    parser.add_argument("--home", default=str(Path.home() / ".local/share/jobhound"), help="Choose a durable third-party workspace location.")
     parser.add_argument("--port", type=int, default=4176, help="Loopback port; 4176 keeps the test instance separate.")
     parser.add_argument("--network-mode", choices=("direct", "environment"),
                         default=os.getenv("JOBHOUND_EXTERNAL_NETWORK_MODE", "direct"),
                         help="Opt in to the workspace proxy/CA environment for external job/feed requests.")
+    parser.add_argument("--profile", choices=("agent", "desktop"), default="agent")
     commands = parser.add_subparsers(dest="action", required=True)
-    for name in ("install", "doctor", "serve", "status", "tools"):
+    for name in ("install", "doctor", "serve", "status", "tools", "start", "stop", "managed-serve", "mcp"):
         commands.add_parser(name)
     call = commands.add_parser("call")
     call.add_argument("tool")
     call.add_argument("--arguments", default="{}")
+    call.add_argument("--arguments-file")
     args = parser.parse_args()
     try:
         if sys.version_info < (3, 11):
@@ -136,6 +141,9 @@ def main():
         if args.network_mode not in {"direct", "environment"}:
             raise ValueError("network-mode must be direct or environment")
         value = manifest()
+        legacy_home = HERE / ".jobhound"
+        if args.home == str(Path.home() / ".local/share/jobhound") and (legacy_home / "data").exists():
+            raise ValueError("Existing clone-local profile found. Pass --home explicitly to preserve it; no data was moved.")
         root, runtime, app, python = layout(args.home, value["release"])
         ready = (runtime / "ready.json").exists() and python.exists()
         api_url = f"http://127.0.0.1:{args.port}/api/v1"
@@ -153,28 +161,59 @@ def main():
                       "proxy_environment_present": any(os.getenv(key) for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy")),
                       "private_artifact_mount": "unverified", "restart_durability": "unverified",
                       "background_service_uptime": "unverified",
-                      "mcp": {"command": str(python), "args": ["-m", "server.mcp_server"], "cwd": str(app),
-                              "env": {"JOBHOUND_API_URL": api_url}}}
+                      "service": health(args.port), "profile": args.profile,
+                      "persistent_notes_directory": str(root / "notes"),
+                      "local_scrapers": "disabled" if args.profile == "agent" else "available",
+                      "mcp": {"command": sys.executable, "args": [str(HERE / "jobhound.py"), "--home", str(root), "--port", str(args.port), "--profile", args.profile, "--network-mode", args.network_mode, "mcp"], "cwd": str(HERE)}}
         else:
             if not ready:
                 raise ValueError("Run install first; use the same --home for every command")
-            env = {**os.environ, "JOBHOUND_API_URL": api_url, "JOBHOUND_DB_PATH": str(root / "data" / "jobhound.sqlite3"), "JOBHOUND_LAN": "0", "JOBHOUND_EXTERNAL_NETWORK_MODE": args.network_mode}
-            if args.action == "serve":
-                command = [str(python), "-m", "uvicorn", "server.app:app", "--host", "127.0.0.1", "--port", str(args.port)]
+            env = {**os.environ, "JOBHOUND_API_URL": api_url, "JOBHOUND_DB_PATH": str(root / "data" / "jobhound.sqlite3"), "JOBHOUND_LAN": "0", "JOBHOUND_EXTERNAL_NETWORK_MODE": args.network_mode, "JOBHOUND_PROFILE": args.profile,
+                   "JOBHOUND_INSTANCE_ID": instance_id(root, value["release"]), "JOBHOUND_RELEASE": value["release"]}
+            service_command = [str(python), "-m", "uvicorn", "server.app:app", "--host", "127.0.0.1", "--port", str(args.port)]
+            launcher = [sys.executable, str(HERE / "jobhound.py"), "--home", str(root), "--port", str(args.port),
+                        "--network-mode", args.network_mode, "--profile", args.profile, "managed-serve"]
+            if args.action in {"serve", "managed-serve"}:
+                env["JOBHOUND_OWNER_PID"] = str(os.getpid())
+                return run_service(root, value["release"], args.port, service_command, env=env, cwd=app,
+                                   idle_seconds=600 if args.action == "managed-serve" else None)
+            if args.action == "stop":
+                result = stop_service(root, value["release"], args.port)
+            elif args.action == "start":
+                result = {"ok": True, **ensure_service(root, value["release"], args.port, launcher, env=env, cwd=HERE)}
             else:
-                command = [str(python), "-m", "server.workspace_cli", "--api-url", api_url, args.action]
+                if args.action != "tools":
+                    ensure_service(root, value["release"], args.port, launcher, env=env, cwd=HERE)
+                    touch(root)
+                command = ([str(python), "-m", "server.mcp_server"] if args.action == "mcp" else [str(python), "-m", "server.workspace_cli", "--api-url", api_url, args.action])
                 if args.action == "call":
                     command += [args.tool, "--arguments", args.arguments]
-            child = subprocess.Popen(command, cwd=app, env=env)
-            def stop_child(signum, frame):
-                if child.poll() is None:
-                    child.terminate()
-            signal.signal(signal.SIGTERM, stop_child)
-            try:
-                return child.wait()
-            except KeyboardInterrupt:
-                stop_child(None, None)
-                return child.wait(timeout=20)
+                    if args.arguments_file:
+                        command += ["--arguments-file", str(Path(args.arguments_file).resolve())]
+                heartbeat_stop = threading.Event()
+                def heartbeat():
+                    while not heartbeat_stop.wait(30):
+                        touch(root)
+                heartbeat_thread = threading.Thread(target=heartbeat, daemon=True)
+                if args.action != "tools":
+                    heartbeat_thread.start()
+                child = subprocess.Popen(command, cwd=app, env=env)
+                def stop_child(signum, frame):
+                    if child.poll() is None:
+                        child.terminate()
+                signal.signal(signal.SIGTERM, stop_child)
+                try:
+                    code = child.wait()
+                    if args.action != "tools":
+                        touch(root)
+                    return code
+                except KeyboardInterrupt:
+                    stop_child(None, None)
+                    return child.wait(timeout=30)
+                finally:
+                    heartbeat_stop.set()
+                    if heartbeat_thread.is_alive():
+                        heartbeat_thread.join(timeout=1)
     except Exception as exc:
         result = {"ok": False, "error": {"code": "workspace_setup_failed", "message": str(exc)},
                   "next_step": "Inspect the error. Keep the same test profile; do not retry monitor creation blindly."}

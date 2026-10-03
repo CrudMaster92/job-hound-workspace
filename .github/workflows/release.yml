@@ -1,0 +1,53 @@
+name: Publish approved workspace release
+on:
+  push:
+    branches: [main]
+    paths: [release.json, 'release-assets/**', '.github/workflows/release.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: workspace-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify approved archive and immutable release identity
+        id: manifest
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,re
+          from pathlib import Path
+          value=json.loads(Path('release.json').read_text())
+          release=value['release']
+          assert re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,79}',release)
+          archive=Path('release-assets')/f'jobhound-{release}.tar.gz'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==value['sha256']
+          assert value['archive_url']==f'https://github.com/CrudMaster92/job-hound-workspace/releases/download/{release}/{archive.name}'
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+              output.write(f'release={release}\narchive={archive}\n')
+          PY
+      - name: Publish the release authorized by the main-branch merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ steps.manifest.outputs.release }}
+          ARCHIVE: ${{ steps.manifest.outputs.archive }}
+        run: |
+          if gh release view "$RELEASE" >/dev/null 2>&1; then
+            mkdir .existing-release
+            gh release download "$RELEASE" --pattern "$(basename "$ARCHIVE")" --dir .existing-release
+            cmp "$ARCHIVE" ".existing-release/$(basename "$ARCHIVE")"
+          else
+            gh release create "$RELEASE" "$ARCHIVE" release-assets/SHA256SUMS \
+              --target "$GITHUB_SHA" --title "JobHound $RELEASE" --notes-file RELEASE_NOTES.md --prerelease
+          fi

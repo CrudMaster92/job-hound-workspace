@@ -7,21 +7,20 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      JOBHOUND_SMOKE_HOME: /home/runner/.local/share/jobhound-smoke
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Inspect fresh workspace
-        run: python jobhound.py doctor
-      - name: Install verified preview release
-        run: python jobhound.py install
-      - name: Verify live backend, bundled UI and typed agent transport
+      - run: python jobhound.py --home "$JOBHOUND_SMOKE_HOME" doctor
+      - run: python jobhound.py --home "$JOBHOUND_SMOKE_HOME" install
+      - name: Verify backend, UI, presets and typed board transport
         env:
           JOBHOUND_SMOKE_PUBLIC_BOARD: '1'
           JOBHOUND_SMOKE_PRESET_SNAPSHOT: '1'
         run: python smoke.py
-
