@@ -1,12 +1,25 @@
 # Find useful roles first
 
+## Before the first search
+
+Run commands from the workspace repository, where `jobhound.py`,
+`search-preferences.schema.json` and `search-preferences.example.json` live.
+Choose one private durable home, for example `~/.local/share/jobhound`.
+In these docs, `<home>` means that chosen directory; it is a placeholder,
+not filesystem root. Use the same `--home` and network mode for every call.
+After the reviewed release is available, run `python3 jobhound.py --home
+"$HOME/.local/share/jobhound" install` once. Then `call`, `status` and the
+launcher stdio `mcp` command automatically ensure the owned loopback service
+is running; no separate daemon-start step is required. `tools` discovers
+schemas without starting it. These commands use the installed backend.
+
 Offer these behaviors when a human asks for job-search help: find roles, browse employers, refine searches, help with resumes/letters or interviews, and provide daily updates. Keep application tracking, platform shortcuts and dashboard editing optional. This workflow should be usable by any Muse agent without prior context.
 
 ## Small onboarding
 
 Ask only titles/keywords, locations and remote/hybrid/onsite preference. Allow skipping and partial answers, then show useful results promptly. A resume is optional and requires the human's choice before importing private files. Keep preferences in supported host memory or an explicitly chosen private durable file; never commit them to a public repo. Discover schemas before offering extra refinements; do not invent fields or a global-profile tool.
 
-Write the chosen search to <home>/agent-search.json after onboarding, using search-preferences.schema.json (generated from the canonical AgentSearchPreferences and BoardQuery contracts). Start from search-preferences.example.json, replace its example query with this human's choices, and keep daily_notification disabled unless a supported host reminder was actually created after their request. Read this private file for later checks and reminders; never copy it into a public proposal. Humans can inspect/edit it, and every query is still executed by the same search_public_jobs contract used by the app UI. Only update checkpoint after a successful visible delivery.
+Write the chosen search to `<home>/agent-search.json` after onboarding, using `search-preferences.schema.json` beside the launcher (generated from the canonical AgentSearchPreferences and BoardQuery contracts). Start from the repository's `search-preferences.example.json`, replace its example query with this human's choices, and keep daily_notification disabled unless a supported host reminder was actually created after their request. Read this private file for later checks and reminders; never copy it into a public proposal. Humans can inspect/edit it, and every query is still executed by the same search_public_jobs contract used by the app UI. Its `checkpoint` field holds `feed_generation`, `last_delivery_at` and `sent_job_ids`; these IDs are the returned board job IDs, not title fingerprints. Only update checkpoint after a successful visible delivery.
 
 Tracking and other optional features are mentioned once, skipped by default, and available on request.
 
@@ -29,7 +42,7 @@ Check ok and result.isError, then use result.structuredContent or its documented
 
 After a useful search, offer a short daily update. Only create a supported host reminder/cron when that human opts in. Confirm preferred time/timezone and short message versus quiet artifact refresh. Inspect existing reminders and update one rather than duplicate.
 
-The reminder prompt should say: use the same durable JobHound home and network mode; inspect board freshness; search the human's saved criteria; report relevant matches not seen in the previous successful update using stable IDs; include direct links and feed date; keep the summary short. Persist the checkpoint in a private durable location and update it only after actual delivery or a verified visible artifact. An unseen cached job is not necessarily newly posted. If the feed fails, report that once, retain the checkpoint and avoid retry floods.
+The reminder prompt should say: use the same durable JobHound home and network mode; inspect board freshness; search the human's saved criteria; report relevant matches not seen in the previous successful update using board job IDs; include direct links and feed date; keep the summary short. Persist the checkpoint in the `checkpoint` field of `<home>/agent-search.json` and update it only after actual delivery or a verified visible artifact. An unseen cached job is not necessarily newly posted. If the feed fails, report that once, retain the checkpoint and avoid retry floods.
 
 If the host has no scheduling or notifications, retain the private search and offer conversational checks when the human asks "check my roles". Do not invent a cron capability.
 
