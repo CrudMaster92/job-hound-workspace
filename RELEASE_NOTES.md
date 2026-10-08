@@ -1,4 +1,25 @@
-# Preview 6: full-feed search verified on agent hosts
+# Preview 7: public-board coverage and capacity
+
+Public feed readers accept all search pages that fit the 200 MB index contract,
+without the old 500-page stop. Full `.json.gz` detail pages are hash-checked
+before bounded expansion, preserving source descriptions. Install this release
+before public detail compression is enabled. Existing private profiles, notes,
+saved roles, and the 111-tool API stay compatible; stop the owned old service and
+reinstall with the same durable home.
+
+The bundled UI shares the site's capacity fixes. The canonical public collector
+resumes supported JSON pagination beyond older recipe page-count stops while
+preserving ownership and explicit partial coverage. New-source public admission
+and release publication are separate from installing this reader. The dated
+public snapshot contains nine collections and 733 monitor references.
+
+Reader regression tests cover 501 search pages, 200,001 browser jobs, full gzip
+details, corrupted hashes and bounded expansion. All 1,103 detail pages in the
+captured live generation round-tripped losslessly: 393 MB became 133 MB with
+all 110,230 jobs intact. Fresh Muse-host installation/lifecycle remains to be
+observed after this release is published.
+
+## Previous Preview 6 acceptance evidence
 
 The shared query bridge now accepts supported public feeds above 64 MiB, with
 a 256 MiB byte budget covering the 200 MB feed and bounded local overlays.
