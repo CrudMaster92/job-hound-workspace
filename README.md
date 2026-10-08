@@ -4,6 +4,14 @@ Run the existing JobHound app inside Meta Muse or a similar agent workspace. The
 
 Preview 6 has passed real Muse and GitHub Linux tests: full-feed search, identical HTTP/MCP role IDs, 111 tools, automatic startup/reuse and stop/restart with retained notes. Proxy-aware board access and the dated preset snapshot work. Local scraper execution is disabled in the agent profile; blocked live preset refresh retains its original error and offline snapshot. Human UI mounting, full VM restart persistence and sustained background operation remain unverified.
 
+Preview 7 adds readers for losslessly compressed public job details and removes
+the arbitrary 500-search-page limit. The 200 MB aggregate index budget and
+hash/generation checks remain. Update/reinstall this release before the feed
+enables `.json.gz` detail pages; a feed update does not update installed code.
+The packaged catalog snapshot includes all nine current collections and keeps
+its original capture date. Windows reader/build tests pass; this release's
+fresh Muse-host lifecycle has not yet been observed.
+
 ## Fresh conversations and lightweight skills
 
 Read [AGENTS.md](AGENTS.md) as the entry point. A fresh Muse conversation may not automatically load this repository or register its files in a native skill catalog. You can introduce it with: "Use JobHound from CrudMaster92/job-hound-workspace; read AGENTS.md and use its workflows when I ask for job-search help."
